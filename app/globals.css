@@ -28,3 +28,32 @@ body {
   font-family:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+
+/* Markdown rendering inside run traces */
+.prose-mm {
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+.prose-mm h1,
+.prose-mm h2,
+.prose-mm h3 {
+  font-weight: 600;
+  margin: 1.2em 0 0.5em;
+}
+.prose-mm h1 { font-size: 1.35rem; }
+.prose-mm h2 { font-size: 1.15rem; }
+.prose-mm h3 { font-size: 1rem; }
+.prose-mm p { margin: 0.6em 0; }
+.prose-mm ul, .prose-mm ol { margin: 0.6em 0; padding-left: 1.4em; }
+.prose-mm ul { list-style: disc; }
+.prose-mm ol { list-style: decimal; }
+.prose-mm li { margin: 0.25em 0; }
+.prose-mm a { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 2px; }
+.prose-mm code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.85em; }
+.prose-mm pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.8em 1em; overflow-x: auto; margin: 0.8em 0; }
+.prose-mm pre code { background: none; border: none; padding: 0; }
+.prose-mm blockquote { border-left: 3px solid var(--border); padding-left: 1em; color: var(--muted); margin: 0.8em 0; }
+.prose-mm table { border-collapse: collapse; margin: 0.8em 0; width: 100%; }
+.prose-mm th, .prose-mm td { border: 1px solid var(--border); padding: 0.4em 0.7em; text-align: left; }
+.prose-mm th { background: var(--surface-2); }
+.prose-mm hr { border-color: var(--border); margin: 1.2em 0; }
