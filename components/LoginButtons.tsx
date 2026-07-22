@@ -28,15 +28,23 @@ export default function LoginButtons() {
   const router = useRouter();
   const { refresh } = useMe();
   const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const login = (provider: "google" | "github") => {
+  const login = async (provider: "google" | "github") => {
     setBusy(provider);
-    loginWithPopup(provider, () => {
-      void refresh().then(() => {
-        setBusy(null);
-        router.push("/chat");
-      });
-    });
+    setError(null);
+    try {
+      await loginWithPopup(provider); // Firebase signInWithPopup + cookie exchange
+      await refresh();
+      router.push("/chat");
+    } catch (e) {
+      const code = (e as { code?: string }).code ?? "";
+      if (!code.includes("popup-closed") && !code.includes("cancelled")) {
+        setError((e as Error).message ?? "Sign-in failed");
+      }
+    } finally {
+      setBusy(null);
+    }
   };
 
   const cls =
@@ -44,14 +52,15 @@ export default function LoginButtons() {
 
   return (
     <div className="flex flex-col gap-3 w-full max-w-xs">
-      <button className={cls} disabled={busy !== null} onClick={() => login("google")}>
+      <button className={cls} disabled={busy !== null} onClick={() => void login("google")}>
         <GoogleIcon />
         {busy === "google" ? "Waiting for Google…" : "Continue with Google"}
       </button>
-      <button className={cls} disabled={busy !== null} onClick={() => login("github")}>
+      <button className={cls} disabled={busy !== null} onClick={() => void login("github")}>
         <GithubIcon />
         {busy === "github" ? "Waiting for GitHub…" : "Continue with GitHub"}
       </button>
+      {error && <p className="text-xs text-red-400 text-center">{error}</p>}
     </div>
   );
 }

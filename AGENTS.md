@@ -11,7 +11,7 @@ Frontend of the MicroManus deep-research agent. **Spec: `../docs/frontend.md`** 
 ## Rules of this app
 
 - Pure API client. All data via `fetch('/api/…')` — same-origin through the rewrite in `next.config.ts` (`/api/:path*` → `http://localhost:4000/:path*`). No API routes, no server secrets, no direct DB access, nothing `NEXT_PUBLIC_` secret-shaped.
-- Auth is a httpOnly cookie set by the backend; the client never handles tokens. Sign-in = plain link to `/api/auth/google` / `/api/auth/github`.
+- Auth: Firebase `signInWithPopup` (`lib/firebase.ts` — public web config) → `POST /api/auth/session { idToken }` → backend sets the httpOnly cookie. After that exchange the app never touches Firebase state; session = cookie only.
 - Live runs: `new EventSource('/api/chat/runs/{id}/events')`. The server replays persisted steps on connect — the timeline component renders persisted steps and live events through the same code path.
 - State: no state library. `me` context (user/credits/hasKey) + local state + plain fetch hooks.
 - Styling: Tailwind 4 only, no component library. Dark chat UI, system fonts.
