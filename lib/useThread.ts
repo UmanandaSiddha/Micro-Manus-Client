@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "./api";
+import { api, apiUrl } from "./api";
 
 export interface StepView {
   index: number;
@@ -161,7 +161,9 @@ export function useThread(threadId: string, onCreditsChanged: () => void) {
     (runId: string, modelId: string) => {
       esRef.current?.close();
       setLiveRun({ id: runId, modelId, status: "running", startedAt: new Date().toISOString(), steps: [] });
-      const es = new EventSource(`/api/chat/runs/${runId}/events`);
+      const es = new EventSource(apiUrl(`/api/chat/runs/${runId}/events`), {
+        withCredentials: true, // cookie auth across origins
+      });
       esRef.current = es;
       for (const ev of EVENTS) {
         es.addEventListener(ev, (e) => {

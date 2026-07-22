@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import Composer, { useModels } from "@/components/Composer";
 import RunTrace from "@/components/RunTrace";
+import { apiUrl } from "@/lib/api";
 import { useMe } from "@/lib/me";
 import { runFromPersisted, RunView, useThread } from "@/lib/useThread";
 import { useChat } from "../layout";
@@ -106,7 +107,7 @@ function ThreadView() {
               {detail.artifacts.map((a) => (
                 <a
                   key={a.id}
-                  href={`/api/artifacts/${a.id}/download`}
+                  href={apiUrl(`/api/artifacts/${a.id}/download`)}
                   className="flex items-center gap-2 rounded-lg border border-border-c bg-surface px-3 py-2 text-sm hover:bg-surface-2"
                 >
                   📄 {a.title}

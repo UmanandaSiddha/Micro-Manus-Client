@@ -1,16 +1,7 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  async rewrites() {
-    // Same-origin trick: all backend traffic flows through /api/* so cookies
-    // are first-party. Mirrors the production Nginx path-routing.
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${process.env.API_URL ?? "http://localhost:4000"}/:path*`,
-      },
-    ];
-  },
-};
+// No proxy: the client calls the backend directly at NEXT_PUBLIC_API_URL
+// (see lib/api.ts); the backend handles CORS + credentialed cookies.
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
