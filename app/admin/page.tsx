@@ -50,7 +50,7 @@ function AdminInner() {
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
 
-  const isAdmin = me?.user.role === "admin";
+  const isAdmin = me?.user?.role === "admin";
 
   useEffect(() => {
     if (!loading && me && !isAdmin) router.replace("/chat");

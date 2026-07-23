@@ -30,7 +30,7 @@ export default function SettingsShell({
   const path = usePathname();
   const router = useRouter();
   const { me, refresh } = useMe();
-  const nav = me?.user.role === "admin" ? [...NAV, ADMIN_NAV] : NAV;
+  const nav = me?.user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV;
 
   return (
     <div className="flex flex-col h-screen">

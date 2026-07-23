@@ -108,19 +108,19 @@ function AccountMenu() {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => setOpen(false));
   const initials =
-    me?.user.name
+    me?.user?.name
       ?.split(" ")
       .map((p) => p[0])
       .slice(0, 2)
       .join("")
       .toUpperCase() ??
-    me?.user.email.slice(0, 2).toUpperCase() ??
+    me?.user?.email.slice(0, 2).toUpperCase() ??
     "MM";
 
   const items = [
     { label: "Settings", hint: "keys", act: () => router.push("/settings") },
     { label: "Cost dashboard", hint: "usage", act: () => router.push("/dashboard") },
-    ...(me?.user.role === "admin"
+    ...(me?.user?.role === "admin"
       ? [{ label: "Admin", hint: "platform", act: () => router.push("/admin") }]
       : []),
   ];
@@ -140,8 +140,8 @@ function AccountMenu() {
       {open && (
         <div className="menu-pop absolute top-10 right-0 w-[214px] p-[6px] rounded-[13px] z-40" style={{ background: "#16161d" }}>
           <div className="px-[11px] pt-[9px] pb-[7px]">
-            <div className="text-[13px] font-semibold truncate">{me?.user.name ?? "Researcher"}</div>
-            <div className="text-[11.5px] text-mut-2 truncate">{me?.user.email}</div>
+            <div className="text-[13px] font-semibold truncate">{me?.user?.name ?? "Researcher"}</div>
+            <div className="text-[11.5px] text-mut-2 truncate">{me?.user?.email}</div>
           </div>
           <div className="h-px my-1" style={{ background: "rgba(255,255,255,.08)" }} />
           {items.map((i) => (
