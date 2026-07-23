@@ -24,7 +24,8 @@ export type IconName =
   | "table"
   | "braces"
   | "globe"
-  | "search-doc";
+  | "search-doc"
+  | "paperclip";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   menu: (
@@ -144,6 +145,9 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <circle cx="16.5" cy="16.5" r="3" />
       <line x1="21" y1="21" x2="18.6" y2="18.6" />
     </>
+  ),
+  paperclip: (
+    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
   ),
 };
 

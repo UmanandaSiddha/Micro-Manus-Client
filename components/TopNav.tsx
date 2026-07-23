@@ -59,7 +59,7 @@ function ModelSelector({
         <Icon name="chevron-down" size={13} className="text-mut-3" />
       </button>
       {open && (
-        <div className="menu-pop absolute top-[38px] left-0 w-[300px] p-[6px] rounded-[14px] z-40">
+        <div className="menu-pop absolute top-[38px] left-0 w-[300px] p-[6px] rounded-[14px] z-40" style={{ background: "#16161d" }}>
           {models.length === 0 && (
             <div className="px-3 py-3 text-[12.5px] text-mut-2">
               No models yet —{" "}
@@ -135,7 +135,7 @@ function AccountMenu() {
         {initials}
       </button>
       {open && (
-        <div className="menu-pop absolute top-10 right-0 w-[214px] p-[6px] rounded-[13px] z-40">
+        <div className="menu-pop absolute top-10 right-0 w-[214px] p-[6px] rounded-[13px] z-40" style={{ background: "#16161d" }}>
           <div className="px-[11px] pt-[9px] pb-[7px]">
             <div className="text-[13px] font-semibold truncate">{me?.user.name ?? "Researcher"}</div>
             <div className="text-[11.5px] text-mut-2 truncate">{me?.user.email}</div>

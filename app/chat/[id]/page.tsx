@@ -7,6 +7,7 @@ import ArtifactPanel, { ART_COLOR } from "@/components/ArtifactPanel";
 import Composer from "@/components/Composer";
 import Icon, { ARTIFACT_ICON } from "@/components/Icon";
 import RunTimeline from "@/components/RunTimeline";
+import { apiUrl } from "@/lib/api";
 import { useMe } from "@/lib/me";
 import { ArtifactRef, runFromPersisted, RunView, useThread } from "@/lib/useThread";
 import { useChat } from "../layout";
@@ -170,6 +171,26 @@ function ThreadView() {
               </div>
             )}
 
+            {detail.uploads.length > 0 && (
+              <div className="mt-3">
+                <div className="mono text-[10px] uppercase tracking-wider text-mut-4 mb-2">Attached files</div>
+                <div className="flex flex-wrap gap-2">
+                  {detail.uploads.map((u) => (
+                    <a
+                      key={u.id}
+                      href={apiUrl(u.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="glass flex items-center gap-[9px] rounded-[10px] px-[11px] py-[8px] text-[12px] cursor-pointer hover:bg-[rgba(255,255,255,.05)]"
+                    >
+                      <Icon name="paperclip" size={13} className="text-mut-2" />
+                      <span className="max-w-[200px] truncate text-ink-2">{u.filename}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {error && <p className="text-sm text-[#ff8a8a] mt-3">{error}</p>}
             <div ref={bottomRef} />
           </div>
@@ -178,7 +199,7 @@ function ThreadView() {
         <Composer
           disabled={!me?.hasKey || !modelId}
           running={!!running}
-          onSend={(content) => send(content, modelId)}
+          onSend={(content, attachmentIds) => send(content, modelId, attachmentIds)}
           onCancel={() => void cancel()}
         />
       </main>

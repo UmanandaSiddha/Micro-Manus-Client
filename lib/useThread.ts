@@ -45,6 +45,7 @@ export interface ThreadDetail {
     started_at: string;
   }>;
   artifacts: Array<{ id: string; type: string; title: string; created_at: string }>;
+  uploads: Array<{ id: string; filename: string; mime: string; url: string }>;
 }
 
 interface PersistedStep {
@@ -199,7 +200,10 @@ export function useThread(
           if (ev === "run_completed" || ev === "run_failed") {
             es.close();
             onCreditsChanged();
-            void load().then(() => setLiveRun(null));
+            // Keep liveRun as the display source for this run — do NOT null it and
+            // swap to the persisted render (that swap is the end-of-stream "jump").
+            // Reload detail only for the sidebar/artifacts; the merge prefers liveRun.
+            void load();
           }
         });
       }
@@ -227,12 +231,19 @@ export function useThread(
   }, [load, subscribe]);
 
   const send = useCallback(
-    async (content: string, modelId: string) => {
+    async (content: string, modelId: string, attachmentIds: string[] = []) => {
       setError(null);
       try {
         const { runId } = await api<{ runId: string }>(
           `/api/chat/threads/${threadId}/messages`,
-          { method: "POST", json: { content, modelId } },
+          {
+            method: "POST",
+            json: {
+              content,
+              modelId,
+              ...(attachmentIds.length ? { attachmentIds } : {}),
+            },
+          },
         );
         onCreditsChanged();
         await load(); // pick up the user message
