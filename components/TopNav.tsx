@@ -51,16 +51,18 @@ function ModelSelector({
           className="grad w-[7px] h-[7px] rounded-full"
           style={{ boxShadow: "0 0 8px rgba(129,140,248,.7)" }}
         />
-        <span className="font-medium">{current?.label ?? "Pick a model"}</span>
+        <span className="font-medium max-w-[96px] sm:max-w-none truncate">
+          {current?.label ?? "Pick a model"}
+        </span>
         {current && (
-          <span className="mono text-[11px] text-mut-3">
+          <span className="mono text-[11px] text-mut-3 hidden sm:inline">
             ${current.pricing.in}/{current.pricing.out}
           </span>
         )}
         <Icon name="chevron-down" size={13} className="text-mut-3" />
       </button>
       {open && (
-        <div className="menu-pop absolute top-[38px] left-0 w-[300px] p-[6px] rounded-[14px] z-40" style={{ background: "#16161d" }}>
+        <div className="menu-pop absolute top-[38px] left-0 w-[min(300px,86vw)] p-[6px] rounded-[14px] z-40" style={{ background: "#16161d" }}>
           {models.length === 0 && (
             <div className="px-3 py-3 text-[12.5px] text-mut-2">
               No models yet —{" "}
@@ -201,7 +203,7 @@ export default function TopNav({
 
   return (
     <div
-      className="h-[53px] shrink-0 flex items-center gap-[14px] px-4"
+      className="h-[53px] shrink-0 flex items-center gap-2 sm:gap-[14px] px-3 sm:px-4"
       style={{
         borderBottom: "1px solid rgba(255,255,255,.07)",
         background: "rgba(10,10,14,.6)",
@@ -210,13 +212,14 @@ export default function TopNav({
     >
       <button
         onClick={onToggleSidebar}
-        className="btn-ghost w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[#b9b9c4]"
+        className="btn-ghost w-[30px] h-[30px] shrink-0 rounded-lg flex items-center justify-center text-[#b9b9c4]"
         title="Toggle sidebar"
       >
         <Icon name="menu" size={16} />
       </button>
-      <Link href="/chat">
-        <Logo />
+      <Link href="/chat" className="shrink-0">
+        <span className="sm:hidden"><Logo withText={false} /></span>
+        <span className="hidden sm:inline"><Logo /></span>
       </Link>
 
       <ModelSelector models={models} modelId={modelId} setModelId={setModelId} />
@@ -233,14 +236,14 @@ export default function TopNav({
           style={{ background: "radial-gradient(circle at 35% 30%, #fde68a, #f59e0b)" }}
         />
         <span className="mono text-xs text-[#e2c078] font-medium">{me?.credits ?? 0}</span>
-        <span className="text-mut-3 text-[11.5px]">credits</span>
+        <span className="text-mut-3 text-[11.5px] hidden sm:inline">credits</span>
       </div>
       <button
         onClick={() => void buy()}
         disabled={buying}
-        className="btn-grad px-[13px] py-[7px] rounded-[9px] text-[12.5px] disabled:opacity-60"
+        className="btn-grad shrink-0 px-[13px] py-[7px] rounded-[9px] text-[12.5px] disabled:opacity-60"
       >
-        {buying ? "…" : "Buy credits"}
+        {buying ? "…" : <><span className="hidden sm:inline">Buy credits</span><span className="sm:hidden">Buy</span></>}
       </button>
 
       <AccountMenu />

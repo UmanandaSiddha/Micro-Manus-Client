@@ -36,12 +36,17 @@ export default function Sidebar({
   threads,
   activeId,
   open,
+  overlay = false,
   onChanged,
+  onNavigate,
 }: {
   threads: ThreadListItem[];
   activeId?: string;
   open: boolean;
+  /** Narrow screens: float over the chat instead of squeezing it. */
+  overlay?: boolean;
   onChanged: () => void;
+  onNavigate?: () => void;
 }) {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -49,6 +54,7 @@ export default function Sidebar({
   const newChat = async () => {
     const { id } = await api<{ id: string }>("/api/chat/threads", { method: "POST" });
     onChanged();
+    onNavigate?.();
     router.push(`/chat/${id}`);
   };
 
@@ -61,13 +67,23 @@ export default function Sidebar({
     <aside
       className="shrink-0 overflow-hidden"
       style={{
-        width: open ? 264 : 0,
+        width: open ? "min(264px, 84vw)" : 0,
         borderRight: open ? "1px solid rgba(255,255,255,.07)" : "none",
-        background: "rgba(12,12,16,.92)",
+        background: overlay ? "rgba(12,12,16,.98)" : "rgba(12,12,16,.92)",
         transition: "width .28s cubic-bezier(.4,0,.2,1)",
+        ...(overlay
+          ? {
+              position: "absolute",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              zIndex: 40,
+              boxShadow: open ? "24px 0 60px rgba(0,0,0,.5)" : "none",
+            }
+          : {}),
       }}
     >
-      <div className="w-[264px] h-full flex flex-col p-[14px]">
+      <div className="w-[min(264px,84vw)] h-full flex flex-col p-[14px]">
         <button
           onClick={() => void newChat()}
           className="btn-grad w-full flex items-center justify-center gap-[6px] py-[10px] rounded-[11px] text-[13px]"
@@ -105,6 +121,7 @@ export default function Sidebar({
                 <div key={t.id} className="group relative">
                   <Link
                     href={`/chat/${t.id}`}
+                    onClick={() => onNavigate?.()}
                     className="flex gap-[9px] items-center px-[9px] py-2 rounded-[9px] mb-[2px] hover:bg-[rgba(255,255,255,.05)]"
                     style={{ background: t.id === activeId ? "rgba(255,255,255,.06)" : "transparent" }}
                   >

@@ -88,7 +88,7 @@ function ThreadView() {
     <div className="flex-1 flex min-h-0 relative">
       <main className="flex-1 min-w-0 flex flex-col">
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-[26px]">
-          <div className="max-w-[760px] mx-auto px-7">
+          <div className="max-w-[760px] mx-auto px-4 sm:px-7">
             {!me?.hasKey && (
               <div
                 className="mb-6 rounded-xl px-4 py-3 text-[12.8px]"

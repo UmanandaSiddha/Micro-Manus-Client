@@ -99,7 +99,7 @@ function PaywallInner() {
   }
 
   const cardBase: React.CSSProperties = {
-    width: 320,
+    width: "min(320px, 100%)",
     padding: "28px 26px",
     borderRadius: 20,
     backdropFilter: "blur(16px)",

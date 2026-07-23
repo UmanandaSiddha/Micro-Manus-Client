@@ -101,7 +101,8 @@ function UsageSection() {
       </div>
 
       {/* per-thread table */}
-      <div className="mt-[22px] rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.08)" }}>
+      <div className="mt-[22px] rounded-2xl overflow-x-auto" style={{ border: "1px solid rgba(255,255,255,.08)" }}>
+        <div className="min-w-[640px]">
         <div
           className="flex px-4 py-[11px] mono text-[10.5px] tracking-[.05em] uppercase text-mut-3"
           style={{ background: "rgba(255,255,255,.03)", borderBottom: "1px solid rgba(255,255,255,.07)" }}
@@ -156,6 +157,7 @@ function UsageSection() {
             <span className="flex-1 text-right mono text-xs font-semibold">{usd(th.costUsd)}</span>
           </div>
         ))}
+        </div>
       </div>
 
       {/* what-if */}

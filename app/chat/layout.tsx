@@ -28,7 +28,17 @@ export const useChat = () => useContext(Ctx);
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
   const [threads, setThreads] = useState<ThreadListItem[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Default closed on narrow screens — 264px of sidebar would crush the chat.
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => typeof window === "undefined" || window.innerWidth >= 900,
+  );
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const check = () => setNarrow(window.innerWidth < 900);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const params = useParams<{ id?: string }>();
   const models = useModels();
   const { modelId, setModelId } = useModelChoice(models);
@@ -57,12 +67,21 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
             setModelId={setModelId}
             onToggleSidebar={() => setSidebarOpen((v) => !v)}
           />
-          <div className="flex-1 flex min-h-0">
+          <div className="flex-1 flex min-h-0 relative">
+            {narrow && sidebarOpen && (
+              <div
+                onClick={() => setSidebarOpen(false)}
+                className="absolute inset-0 z-30"
+                style={{ background: "rgba(6,6,9,.55)", backdropFilter: "blur(2px)" }}
+              />
+            )}
             <Sidebar
               threads={threads}
               activeId={params.id}
               open={sidebarOpen}
+              overlay={narrow}
               onChanged={() => void reloadThreads()}
+              onNavigate={() => narrow && setSidebarOpen(false)}
             />
             <div className="flex-1 flex flex-col min-w-0 min-h-0">{children}</div>
           </div>

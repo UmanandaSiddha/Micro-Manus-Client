@@ -66,7 +66,7 @@ export default function Composer({
   const canAttach = !disabled && !running;
 
   return (
-    <div className="shrink-0 px-7 pb-5 pt-[14px]">
+    <div className="shrink-0 px-4 sm:px-7 pb-5 pt-[14px]">
       <div className="max-w-[760px] mx-auto">
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-2">

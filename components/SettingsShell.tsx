@@ -61,15 +61,15 @@ export default function SettingsShell({
         </div>
       </div>
 
-      <div className="flex-1 flex min-h-0 max-w-[1080px] w-full mx-auto">
-        <div className="w-[218px] shrink-0 py-[26px] px-[14px] flex flex-col" style={{ borderRight: "1px solid rgba(255,255,255,.06)" }}>
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 max-w-[1080px] w-full mx-auto">
+        <div className="w-full md:w-[218px] shrink-0 py-2 md:py-[26px] px-3 md:px-[14px] flex md:flex-col items-center md:items-stretch gap-1 md:gap-0 overflow-x-auto md:overflow-visible border-b md:border-b-0 md:border-r border-[rgba(255,255,255,.06)]">
           {nav.map((n) => {
             const active = path === n.href;
             return (
               <Link
                 key={n.href}
                 href={n.href}
-                className="w-full flex items-center gap-[11px] px-[11px] py-[9px] rounded-[9px] text-[13.5px] font-medium mb-[2px] hover:bg-[rgba(255,255,255,.05)]"
+                className="shrink-0 md:w-full flex items-center gap-[8px] md:gap-[11px] px-[11px] py-[8px] md:py-[9px] rounded-[9px] text-[13px] md:text-[13.5px] font-medium md:mb-[2px] whitespace-nowrap hover:bg-[rgba(255,255,255,.05)]"
                 style={{
                   background: active ? "rgba(255,255,255,.06)" : "transparent",
                   color: active ? "#e9e9ee" : "#9a9aa6",
@@ -87,13 +87,13 @@ export default function SettingsShell({
                 refresh().then(() => router.replace("/")),
               )
             }
-            className="w-full flex items-center gap-[11px] px-[11px] py-[9px] rounded-[9px] text-[13.5px] font-medium text-[#ff8a8a] cursor-pointer border-none bg-transparent hover:bg-[rgba(255,80,80,.08)]"
+            className="shrink-0 md:w-full flex items-center gap-[8px] md:gap-[11px] px-[11px] py-[8px] md:py-[9px] rounded-[9px] text-[13px] md:text-[13.5px] font-medium whitespace-nowrap text-[#ff8a8a] cursor-pointer border-none bg-transparent hover:bg-[rgba(255,80,80,.08)]"
           >
             <Icon name="x" size={15} />
             Sign out
           </button>
         </div>
-        <div className="flex-1 overflow-auto px-10 py-[34px]">{children}</div>
+        <div className="flex-1 overflow-auto px-4 py-6 md:px-10 md:py-[34px]">{children}</div>
       </div>
     </div>
   );

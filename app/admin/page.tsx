@@ -116,7 +116,8 @@ function AdminInner() {
         />
       </div>
 
-      <div className="rounded-[12px] overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.09)" }}>
+      <div className="rounded-[12px] overflow-x-auto" style={{ border: "1px solid rgba(255,255,255,.09)" }}>
+        <div className="min-w-[640px]">
         <div
           className="flex px-4 py-[9px] mono text-[10.5px] uppercase tracking-wider text-mut-3"
           style={{ background: "rgba(255,255,255,.03)", borderBottom: "1px solid rgba(255,255,255,.08)" }}
@@ -165,6 +166,7 @@ function AdminInner() {
           </div>
         ))}
         {users.length === 0 && <p className="text-mut text-sm p-5 text-center">No users match.</p>}
+        </div>
       </div>
     </SettingsShell>
   );
