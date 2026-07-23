@@ -10,7 +10,7 @@ Frontend of the MicroManus deep-research agent. **Spec: `../docs/frontend.md`** 
 
 ## Rules of this app
 
-- Pure API client, **direct calls — no proxy/rewrite**. Everything goes through `api()` / `apiUrl()` in `lib/api.ts`, which prefix `NEXT_PUBLIC_API_URL` (default `http://localhost:4000`) and always send `credentials: 'include'`. Never call `fetch` on a bare `/api/...` path. No API routes, no server secrets, no direct DB access.
+- Pure API client, **direct calls — no proxy/rewrite**. Everything goes through `api()` / `apiUrl()` in `lib/api.ts`, which prefix `NEXT_PUBLIC_API_URL` (default `http://localhost:5000`) and always send `credentials: 'include'`. Never call `fetch` on a bare `/api/...` path. No API routes, no server secrets, no direct DB access.
 - Auth: Firebase `signInWithPopup` (`lib/firebase.ts` — public web config) → `POST /api/auth/session { idToken }` → backend sets the httpOnly cookie. After that exchange the app never touches Firebase state; session = cookie only.
 - Live runs: `new EventSource(apiUrl('/api/chat/runs/{id}/events'), { withCredentials: true })`. The server replays persisted steps on connect — the timeline component renders persisted steps and live events through the same code path.
 - State: no state library. `me` context (user/credits/hasKey) + local state + plain fetch hooks.

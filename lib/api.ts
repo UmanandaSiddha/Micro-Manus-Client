@@ -9,7 +9,7 @@ export class ApiError extends Error {
 
 /** Direct backend origin — no proxy. Backend serves everything under /api/*. */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
 /** Absolute backend URL for non-fetch consumers (EventSource, download links). */
 export const apiUrl = (path: string) => `${API_BASE}${path}`;
