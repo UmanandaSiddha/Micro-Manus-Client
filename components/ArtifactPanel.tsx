@@ -226,12 +226,18 @@ export default function ArtifactPanel({
 }) {
   const color = ART_COLOR[artifact.type] ?? "#818cf8";
   const fillHeight = artifact.type === "pdf" || artifact.type === "html";
+  const [wide, setWide] = useState(false);
 
   return (
     <div
       className="shrink-0 overflow-hidden flex flex-col"
       style={{
-        width: overlay ? "min(432px, 92vw)" : 432,
+        width: overlay
+          ? `min(${wide ? 900 : 432}px, 92vw)`
+          : wide
+            ? "min(58vw, 900px)"
+            : 432,
+        transition: "width .25s ease",
         borderLeft: "1px solid rgba(255,255,255,.07)",
         background: "rgba(11,11,15,.96)",
         backdropFilter: "blur(14px)",
@@ -253,6 +259,22 @@ export default function ArtifactPanel({
         </span>
         <span className="text-[13px] font-semibold flex-1 truncate">{artifact.title}</span>
         <span className="mono text-[10px] uppercase text-mut-3">{artifact.type}</span>
+        <button
+          onClick={() => setWide((w) => !w)}
+          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
+          title={wide ? "Collapse panel" : "Expand panel"}
+        >
+          <Icon name={wide ? "collapse" : "expand"} size={14} />
+        </button>
+        <a
+          href={apiUrl(`/api/artifacts/${artifact.id}/file`)}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
+          title="Open in new tab"
+        >
+          <Icon name="external" size={14} />
+        </a>
         <a
           href={apiUrl(`/api/artifacts/${artifact.id}/download`)}
           className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
