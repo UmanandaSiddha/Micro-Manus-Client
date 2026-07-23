@@ -203,7 +203,10 @@ export default function TopNav({
 
   return (
     <div
-      className="h-[53px] shrink-0 flex items-center gap-2 sm:gap-[14px] px-3 sm:px-4"
+      // relative z-50: the header's dropdowns hang into the content area below;
+      // without a raised stacking context the (positioned) content wrapper
+      // paints over them and swallows their clicks.
+      className="h-[53px] shrink-0 flex items-center gap-2 sm:gap-[14px] px-3 sm:px-4 relative z-50"
       style={{
         borderBottom: "1px solid rgba(255,255,255,.07)",
         background: "rgba(10,10,14,.6)",
