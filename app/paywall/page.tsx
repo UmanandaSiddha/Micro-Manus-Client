@@ -15,6 +15,7 @@ function PaywallInner() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"pay" | "coupon" | null>(null);
+  const [waitingLong, setWaitingLong] = useState(false);
   const polls = useRef(0);
 
   // Entitled (webhook landed / coupon worked) → into the app.
@@ -23,15 +24,20 @@ function PaywallInner() {
   }, [me, router]);
 
   // Back from Stripe: poll /me until the webhook grants credits.
+  // Fast for 15s, then keep polling slowly and tell the user what's up
+  // (locally this almost always means `stripe listen` isn't running).
   useEffect(() => {
     if (!paid) return;
-    const t = setInterval(() => {
-      polls.current += 1;
-      if (polls.current > 15) clearInterval(t);
-      void refresh();
-    }, 1000);
+    const t = setInterval(
+      () => {
+        polls.current += 1;
+        if (polls.current > 15) setWaitingLong(true);
+        void refresh();
+      },
+      waitingLong ? 5000 : 1000,
+    );
     return () => clearInterval(t);
-  }, [paid, refresh]);
+  }, [paid, refresh, waitingLong]);
 
   const pay = async () => {
     setBusy("pay");
@@ -62,9 +68,22 @@ function PaywallInner() {
   if (paid) {
     return (
       <main className="flex-1 grid place-items-center px-6">
-        <div className="text-center">
+        <div className="text-center max-w-md">
           <p className="text-lg font-medium">Payment received 🎉</p>
           <p className="text-muted text-sm mt-2">Granting your credits…</p>
+          {waitingLong && (
+            <div className="mt-6 rounded-lg border border-amber-900/60 bg-amber-950/30 px-4 py-3 text-xs text-amber-300 text-left">
+              Still waiting for Stripe&apos;s webhook confirmation. Your payment
+              went through — credits appear the moment the webhook lands (we
+              keep checking automatically).
+              <span className="block mt-2 text-amber-300/80">
+                Running locally? Make sure{" "}
+                <code className="font-mono">stripe listen</code> is forwarding
+                to the API and <code className="font-mono">STRIPE_WEBHOOK_SECRET</code>{" "}
+                is set.
+              </span>
+            </div>
+          )}
         </div>
       </main>
     );
