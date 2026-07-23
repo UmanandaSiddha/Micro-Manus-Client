@@ -13,6 +13,7 @@ const VENDOR_DOT: Record<string, string> = {
   anthropic: "#a78bfa",
   openai: "#4ade80",
   moonshot: "#60a5fa",
+  groq: "#f55036",
 };
 
 function useClickOutside(onClose: () => void) {

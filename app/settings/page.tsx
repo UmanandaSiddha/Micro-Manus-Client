@@ -20,6 +20,7 @@ const PROVIDERS = [
   ["openai", "OpenAI"],
   ["anthropic", "Anthropic"],
   ["moonshot", "Moonshot (Kimi)"],
+  ["groq", "Groq"],
 ] as const;
 
 const PROVIDER_DOT: Record<string, string> = {
@@ -27,6 +28,7 @@ const PROVIDER_DOT: Record<string, string> = {
   openai: "#4ade80",
   anthropic: "#a78bfa",
   moonshot: "#60a5fa",
+  groq: "#f55036",
 };
 
 function KeysSection() {

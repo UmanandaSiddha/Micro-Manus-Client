@@ -226,18 +226,35 @@ export default function ArtifactPanel({
 }) {
   const color = ART_COLOR[artifact.type] ?? "#818cf8";
   const fillHeight = artifact.type === "pdf" || artifact.type === "html";
-  const [wide, setWide] = useState(false);
+
+  // Freely resizable: drag the left edge, or toggle between the two presets.
+  const [width, setWidth] = useState(432);
+  const [dragging, setDragging] = useState(false);
+  const wide = width > 640;
+
+  const maxW = () => Math.min(window.innerWidth * 0.9, 1200);
+  const startDrag = (e: React.PointerEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = width;
+    setDragging(true);
+    const onMove = (ev: PointerEvent) =>
+      setWidth(Math.min(Math.max(startW + (startX - ev.clientX), 360), maxW()));
+    const onUp = () => {
+      setDragging(false);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
 
   return (
     <div
-      className="shrink-0 overflow-hidden flex flex-col"
+      className="shrink-0 overflow-hidden flex flex-col relative"
       style={{
-        width: overlay
-          ? `min(${wide ? 900 : 432}px, 92vw)`
-          : wide
-            ? "min(58vw, 900px)"
-            : 432,
-        transition: "width .25s ease",
+        width: `min(${width}px, 92vw)`,
+        transition: dragging ? "none" : "width .25s ease",
         borderLeft: "1px solid rgba(255,255,255,.07)",
         background: "rgba(11,11,15,.96)",
         backdropFilter: "blur(14px)",
@@ -260,7 +277,7 @@ export default function ArtifactPanel({
         <span className="text-[13px] font-semibold flex-1 truncate">{artifact.title}</span>
         <span className="mono text-[10px] uppercase text-mut-3">{artifact.type}</span>
         <button
-          onClick={() => setWide((w) => !w)}
+          onClick={() => setWidth(wide ? 432 : Math.min(900, maxW()))}
           className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
           title={wide ? "Collapse panel" : "Expand panel"}
         >
@@ -291,7 +308,11 @@ export default function ArtifactPanel({
         </button>
       </div>
 
-      <div className={`flex-1 overflow-y-auto overflow-x-hidden p-[18px] ${fillHeight ? "flex flex-col" : ""}`}>
+      <div
+        className={`flex-1 overflow-y-auto overflow-x-hidden p-[18px] ${fillHeight ? "flex flex-col" : ""}`}
+        // While dragging, iframes must not swallow pointer events.
+        style={dragging ? { pointerEvents: "none", userSelect: "none" } : undefined}
+      >
         {artifact.type === "pdf" && <PdfPreview id={artifact.id} />}
         {artifact.type === "html" && <HtmlPreview id={artifact.id} title={artifact.title} />}
         {artifact.type === "csv" && <CsvPreview id={artifact.id} />}
@@ -299,6 +320,26 @@ export default function ArtifactPanel({
         {artifact.type === "json" && <JsonPreview id={artifact.id} />}
         {artifact.type === "txt" && <TxtPreview id={artifact.id} />}
       </div>
+
+      {/* left-edge resize handle */}
+      <div
+        onPointerDown={startDrag}
+        className="absolute left-0 top-0 bottom-0 z-10 group"
+        style={{ width: 6, cursor: "col-resize", touchAction: "none" }}
+        title="Drag to resize"
+      >
+        <div
+          className="h-full w-[2px] mx-auto group-hover:bg-[rgba(129,140,248,.55)]"
+          style={{
+            background: dragging ? "#818cf8" : undefined,
+            transition: "background .15s ease",
+          }}
+        />
+      </div>
+      {/* fullscreen shield while dragging: consistent cursor, no text selection */}
+      {dragging && (
+        <div className="fixed inset-0 z-50" style={{ cursor: "col-resize" }} />
+      )}
     </div>
   );
 }
