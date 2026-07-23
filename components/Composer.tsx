@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "@/components/Icon";
 
 export default function Composer({
   disabled,
@@ -62,19 +63,21 @@ export default function Composer({
             {running && onCancel ? (
               <button
                 onClick={onCancel}
-                className="h-[34px] px-[14px] rounded-[10px] cursor-pointer text-[12.5px] font-semibold text-[#ff8a8a]"
+                className="h-[34px] px-[14px] rounded-[10px] cursor-pointer text-[12.5px] font-semibold text-[#ff8a8a] flex items-center gap-[6px]"
                 style={{ border: "1px solid rgba(255,90,90,.3)", background: "rgba(120,30,30,.15)" }}
               >
+                <Icon name="stop" size={12} />
                 Stop
               </button>
             ) : (
               <button
                 onClick={() => void send()}
                 disabled={disabled || running || !text.trim()}
-                className="w-[34px] h-[34px] rounded-[10px] border-none cursor-pointer grad text-[#0a0a12] text-[15px] font-bold flex items-center justify-center disabled:opacity-40"
+                className="w-[34px] h-[34px] rounded-[10px] border-none cursor-pointer grad text-[#0a0a12] flex items-center justify-center disabled:opacity-40"
                 style={{ boxShadow: "0 4px 14px rgba(99,102,241,.4)" }}
+                title="Send"
               >
-                ↑
+                <Icon name="arrow-up" size={17} strokeWidth={2.4} />
               </button>
             )}
           </div>

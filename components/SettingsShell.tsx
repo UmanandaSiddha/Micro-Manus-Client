@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Icon, { IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
 import { useMe } from "@/lib/me";
 
-const NAV = [
-  { href: "/settings", label: "LLM keys", dot: "#4ade80" },
-  { href: "/settings/billing", label: "Billing & credits", dot: "#fbbf24" },
-  { href: "/dashboard", label: "Usage & cost", dot: "#22d3ee" },
+const NAV: { href: string; label: string; icon: IconName; color: string }[] = [
+  { href: "/settings", label: "LLM keys", icon: "sparkles", color: "#4ade80" },
+  { href: "/settings/billing", label: "Billing & credits", icon: "file-text", color: "#fbbf24" },
+  { href: "/dashboard", label: "Usage & cost", icon: "table", color: "#22d3ee" },
 ];
 
 /** Settings/dashboard chrome — the design's settings shell. */
@@ -32,8 +33,9 @@ export default function SettingsShell({
           backdropFilter: "blur(18px)",
         }}
       >
-        <Link href="/chat" className="btn-ghost flex items-center gap-2 px-[11px] py-[6px] rounded-[9px] text-[13px] text-ink-3">
-          ← Workspace
+        <Link href="/chat" className="btn-ghost flex items-center gap-[6px] px-[11px] py-[6px] rounded-[9px] text-[13px] text-ink-3">
+          <Icon name="arrow-left" size={14} />
+          Workspace
         </Link>
         <span className="flex items-center gap-[9px]">
           <Logo withText={false} />
@@ -64,7 +66,7 @@ export default function SettingsShell({
                   color: active ? "#e9e9ee" : "#9a9aa6",
                 }}
               >
-                <span className="w-[6px] h-[6px] rounded-[2px]" style={{ background: n.dot }} />
+                <Icon name={n.icon} size={15} style={{ color: active ? n.color : undefined }} />
                 {n.label}
               </Link>
             );

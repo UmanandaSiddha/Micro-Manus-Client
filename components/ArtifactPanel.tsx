@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Icon, { ARTIFACT_ICON } from "./Icon";
 import Markdown from "./Markdown";
 import { api, apiUrl } from "@/lib/api";
 import type { ArtifactRef } from "@/lib/useThread";
@@ -244,22 +245,27 @@ export default function ArtifactPanel({
         className="h-[53px] shrink-0 flex items-center gap-[10px] px-[14px]"
         style={{ borderBottom: "1px solid rgba(255,255,255,.07)" }}
       >
-        <span className="w-2 h-2 rounded-[2px] shrink-0" style={{ background: color }} />
+        <span
+          className="w-[22px] h-[22px] rounded-md shrink-0 flex items-center justify-center"
+          style={{ background: `${color}1f`, color }}
+        >
+          <Icon name={ARTIFACT_ICON[artifact.type] ?? "file-text"} size={13} />
+        </span>
         <span className="text-[13px] font-semibold flex-1 truncate">{artifact.title}</span>
         <span className="mono text-[10px] uppercase text-mut-3">{artifact.type}</span>
         <a
           href={apiUrl(`/api/artifacts/${artifact.id}/download`)}
-          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[13px] text-[#b9b9c4]"
+          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
           title="Download"
         >
-          ↓
+          <Icon name="download" size={14} />
         </a>
         <button
           onClick={onClose}
-          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-sm text-[#b9b9c4]"
+          className="btn-ghost w-7 h-7 rounded-lg flex items-center justify-center text-[#b9b9c4]"
           title="Close preview"
         >
-          ✕
+          <Icon name="x" size={14} />
         </button>
       </div>
 

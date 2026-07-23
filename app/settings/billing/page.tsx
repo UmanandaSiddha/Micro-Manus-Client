@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Guard from "@/components/Guard";
+import Icon from "@/components/Icon";
 import SettingsShell from "@/components/SettingsShell";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/me";
@@ -91,9 +92,9 @@ function BillingSection() {
         >
           <div className="mono text-[10.5px] tracking-[.08em] text-mut-2 uppercase">How billing works</div>
           <ul className="mt-[14px] flex flex-col gap-[10px] text-[13px] text-ink-3">
-            <li className="flex gap-[10px]"><span className="text-accent">✓</span>1 credit is deducted when a research run starts</li>
-            <li className="flex gap-[10px]"><span className="text-accent">✓</span>Failed runs refund the credit automatically</li>
-            <li className="flex gap-[10px]"><span className="text-accent">✓</span>LLM tokens bill to your own key — itemized in Usage</li>
+            <li className="flex gap-[10px] items-start"><Icon name="check" size={15} className="text-accent mt-px shrink-0" strokeWidth={2.4} />1 credit is deducted when a research run starts</li>
+            <li className="flex gap-[10px] items-start"><Icon name="check" size={15} className="text-accent mt-px shrink-0" strokeWidth={2.4} />Failed runs refund the credit automatically</li>
+            <li className="flex gap-[10px] items-start"><Icon name="check" size={15} className="text-accent mt-px shrink-0" strokeWidth={2.4} />LLM tokens bill to your own key — itemized in Usage</li>
           </ul>
         </div>
       </div>

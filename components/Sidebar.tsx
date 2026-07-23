@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Icon from "@/components/Icon";
 import { api } from "@/lib/api";
 
 export interface ThreadListItem {
@@ -69,10 +70,11 @@ export default function Sidebar({
       <div className="w-[264px] h-full flex flex-col p-[14px]">
         <button
           onClick={() => void newChat()}
-          className="btn-grad w-full flex items-center justify-center gap-2 py-[10px] rounded-[11px] text-[13px]"
+          className="btn-grad w-full flex items-center justify-center gap-[6px] py-[10px] rounded-[11px] text-[13px]"
           style={{ boxShadow: "0 5px 16px rgba(99,102,241,.3)" }}
         >
-          <span className="text-[15px] leading-none">+</span>New research
+          <Icon name="plus" size={15} strokeWidth={2.2} />
+          New research
         </button>
 
         <div className="relative mt-3">
@@ -80,12 +82,12 @@ export default function Sidebar({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search history"
-            className="w-full py-2 pr-[11px] pl-[30px] rounded-[9px] text-[12.5px] text-ink-2"
+            className="w-full py-2 pr-[11px] pl-[32px] rounded-[9px] text-[12.5px] text-ink-2"
             style={{ border: "1px solid rgba(255,255,255,.08)", background: "rgba(0,0,0,.22)" }}
             onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(129,140,248,.5)")}
             onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,.08)")}
           />
-          <span className="absolute left-[10px] top-2 text-mut-4 text-xs">⌕</span>
+          <Icon name="search" size={14} className="absolute left-[10px] top-[9px] text-mut-4" />
         </div>
 
         <nav className="flex-1 overflow-y-auto mt-[14px] -mr-[6px] pr-[6px]">
@@ -125,9 +127,9 @@ export default function Sidebar({
                         if (t.id === activeId) router.push("/chat");
                       })
                     }
-                    className="absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:block text-mut-4 hover:text-[#ff7a7a] text-xs bg-transparent border-none cursor-pointer"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center text-mut-4 hover:text-[#ff7a7a] bg-transparent border-none cursor-pointer"
                   >
-                    ✕
+                    <Icon name="x" size={13} />
                   </button>
                 </div>
               ))}
@@ -137,7 +139,7 @@ export default function Sidebar({
 
         <Link
           href="/settings"
-          className="mt-2 flex items-center gap-[9px] px-[10px] py-[9px] rounded-[9px] text-mut text-[12.5px] hover:bg-[rgba(255,255,255,.05)]"
+          className="mt-2 flex items-center gap-[9px] px-[10px] py-[9px] rounded-[9px] text-mut text-[12.5px] hover:bg-[rgba(255,255,255,.05)] hover:text-ink-2"
           style={{ border: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.02)" }}
         >
           <span className="w-[6px] h-[6px] rounded-full bg-[#4ade80]" />

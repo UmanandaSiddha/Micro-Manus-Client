@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "./Icon";
 import Markdown from "./Markdown";
 import type { RunView, StepView } from "@/lib/useThread";
 
@@ -172,12 +173,12 @@ export default function RunTimeline({ run }: { run: RunView }) {
                       />
                     )}
                     {expandable && (
-                      <span
-                        className="text-[10px] text-mut-3 shrink-0 transition-transform duration-200"
+                      <Icon
+                        name="chevron-right"
+                        size={13}
+                        className="text-mut-3 shrink-0 transition-transform duration-200"
                         style={{ transform: isOpen ? "rotate(90deg)" : "none" }}
-                      >
-                        ▸
-                      </span>
+                      />
                     )}
                   </div>
                   {isOpen && (
@@ -200,12 +201,14 @@ export default function RunTimeline({ run }: { run: RunView }) {
                               onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(129,140,248,.4)")}
                               onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,.07)")}
                             >
-                              <span className="w-4 h-4 rounded shrink-0 grad opacity-70" />
+                              <span className="w-[26px] h-[26px] rounded-md shrink-0 flex items-center justify-center text-mut-2" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.07)" }}>
+                                <Icon name="globe" size={13} />
+                              </span>
                               <span className="flex-1 min-w-0">
                                 <span className="block text-[12.5px] text-ink-2 truncate">{src.title}</span>
                                 <span className="block mono text-[10.5px] text-mut-3">{src.domain}</span>
                               </span>
-                              <span className="text-mut-4 text-xs">↗</span>
+                              <Icon name="external" size={13} className="text-mut-4" />
                             </a>
                           ))}
                         </div>
@@ -272,7 +275,7 @@ export default function RunTimeline({ run }: { run: RunView }) {
                 onClick={() => void navigator.clipboard.writeText(answer.text ?? "")}
                 className="btn-ghost px-[11px] py-[6px] rounded-lg text-xs flex items-center gap-[6px] text-ink-3"
               >
-                <span className="text-accent2">⧉</span>Copy answer
+                <Icon name="copy" size={13} className="text-accent2" />Copy answer
               </button>
             </div>
           )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Icon from "@/components/Icon";
 import Logo from "@/components/Logo";
 import { api } from "@/lib/api";
 import { useMe } from "@/lib/me";
@@ -55,7 +56,7 @@ function ModelSelector({
             ${current.pricing.in}/{current.pricing.out}
           </span>
         )}
-        <span className="text-mut-3 text-[10px]">▾</span>
+        <Icon name="chevron-down" size={13} className="text-mut-3" />
       </button>
       {open && (
         <div className="menu-pop absolute top-[38px] left-0 w-[300px] p-[6px] rounded-[14px] z-40">
@@ -119,7 +120,7 @@ function AccountMenu() {
   const items = [
     { label: "Settings", hint: "keys", act: () => router.push("/settings") },
     { label: "Cost dashboard", hint: "usage", act: () => router.push("/dashboard") },
-  ];
+  ] as const;
 
   return (
     <div className="relative" ref={ref}>
@@ -205,10 +206,10 @@ export default function TopNav({
     >
       <button
         onClick={onToggleSidebar}
-        className="btn-ghost w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[15px] text-[#b9b9c4]"
+        className="btn-ghost w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[#b9b9c4]"
         title="Toggle sidebar"
       >
-        ☰
+        <Icon name="menu" size={16} />
       </button>
       <Link href="/chat">
         <Logo />

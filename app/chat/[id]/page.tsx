@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import ArtifactPanel, { ART_COLOR } from "@/components/ArtifactPanel";
 import Composer from "@/components/Composer";
+import Icon, { ARTIFACT_ICON } from "@/components/Icon";
 import RunTimeline from "@/components/RunTimeline";
 import { useMe } from "@/lib/me";
 import { ArtifactRef, runFromPersisted, RunView, useThread } from "@/lib/useThread";
@@ -125,10 +126,8 @@ function ThreadView() {
                 <div key={item.key} className="mb-8">
                   {/* assistant header */}
                   <div className="flex items-center gap-[10px] mb-4">
-                    <span
-                      className="grad w-[26px] h-[26px] rounded-lg flex items-center justify-center shrink-0"
-                    >
-                      <span className="w-2 h-2 rounded-[2px] bg-[#0a0a12]" />
+                    <span className="grad w-[26px] h-[26px] rounded-lg flex items-center justify-center shrink-0 text-[#0a0a12]">
+                      <Icon name="sparkles" size={14} />
                     </span>
                     <span className="font-semibold text-[13.5px]">MicroManus</span>
                     <span
@@ -159,9 +158,11 @@ function ThreadView() {
                     className="glass flex items-center gap-[10px] rounded-[11px] px-[13px] py-[10px] text-[12.5px] cursor-pointer hover:bg-[rgba(255,255,255,.05)]"
                   >
                     <span
-                      className="w-[7px] h-[7px] rounded-[2px] shrink-0"
-                      style={{ background: ART_COLOR[a.type] ?? "#818cf8" }}
-                    />
+                      className="w-[22px] h-[22px] rounded-md shrink-0 flex items-center justify-center"
+                      style={{ background: `${ART_COLOR[a.type] ?? "#818cf8"}1f`, color: ART_COLOR[a.type] ?? "#818cf8" }}
+                    >
+                      <Icon name={ARTIFACT_ICON[a.type] ?? "file-text"} size={13} />
+                    </span>
                     <span className="max-w-[220px] truncate text-ink-2">{a.title}</span>
                     <span className="mono text-[9.5px] uppercase text-mut-3">{a.type}</span>
                   </button>
@@ -209,13 +210,13 @@ function ThreadView() {
           className="absolute right-4 bottom-24 z-20 flex items-center gap-2 px-[14px] py-[10px] rounded-[11px] text-[12.5px] text-ink-2 cursor-pointer"
           style={{
             border: "1px solid rgba(255,255,255,.12)",
-            background: "rgba(20,20,26,.9)",
-            backdropFilter: "blur(14px)",
+            background: "#16161d",
             boxShadow: "0 8px 24px rgba(0,0,0,.4)",
           }}
         >
-          <span className="w-[7px] h-[7px] rounded-[2px] bg-[#4ade80]" />
-          {detail.artifacts.length} artifact{detail.artifacts.length > 1 ? "s" : ""} →
+          <Icon name="file-text" size={13} className="text-[#4ade80]" />
+          {detail.artifacts.length} artifact{detail.artifacts.length > 1 ? "s" : ""}
+          <Icon name="arrow-right" size={13} className="text-mut-3" />
         </button>
       )}
     </div>

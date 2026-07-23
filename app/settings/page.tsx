@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Guard from "@/components/Guard";
+import Icon from "@/components/Icon";
 import SettingsShell from "@/components/SettingsShell";
 import { api, ApiError } from "@/lib/api";
 import { useMe } from "@/lib/me";
@@ -155,7 +156,7 @@ function KeysSection() {
               <span className="flex-1 text-mut-2">{new Date(k.created_at).toLocaleDateString()}</span>
               <button
                 onClick={() => void remove(k.id)}
-                className="w-7 h-7 rounded-lg cursor-pointer text-mut-2 bg-transparent"
+                className="w-7 h-7 rounded-lg cursor-pointer text-mut-2 bg-transparent flex items-center justify-center"
                 style={{ border: "1px solid rgba(255,255,255,.09)" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "rgba(255,80,80,.12)";
@@ -167,7 +168,7 @@ function KeysSection() {
                 }}
                 title="Remove key"
               >
-                ✕
+                <Icon name="trash" size={13} />
               </button>
             </div>
           ))
