@@ -198,6 +198,15 @@ function PaywallInner() {
           >
             {busy === "coupon" ? "Redeeming…" : "Redeem coupon"}
           </button>
+          <button
+            type="button"
+            onClick={() => setCode("SID_DRDROID")}
+            className="mono text-[10.5px] text-mut-3 mt-3 w-full text-center hover:text-accent2"
+          >
+            reviewer code —{" "}
+            <span className="text-accent2 underline underline-offset-2">SID_DRDROID</span>{" "}
+            (tap to fill)
+          </button>
           <div className="h-px my-5" style={{ background: "rgba(255,255,255,.08)" }} />
           {COUPON_FEATURES.map((f) => (
             <div key={f} className="flex gap-[10px] items-start mb-[11px] text-[13px] text-ink-3">
