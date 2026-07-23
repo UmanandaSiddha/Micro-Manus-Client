@@ -43,6 +43,8 @@ export function MeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // False positive: refresh() only sets state after an await (async fetch).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
   }, [refresh]);
 

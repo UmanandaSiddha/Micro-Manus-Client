@@ -34,14 +34,12 @@ export default function Composer({
   running: boolean;
 }) {
   const [text, setText] = useState("");
-  const [modelId, setModelId] = useState("");
-
-  useEffect(() => {
-    if (!modelId && models.length) {
-      const saved = localStorage.getItem("mm-model");
-      setModelId(saved && models.some((m) => m.id === saved) ? saved : models[0].id);
-    }
-  }, [models, modelId]);
+  // Derived, no effect: explicit pick this session > saved choice > first model.
+  const [choice, setChoice] = useState<string | null>(null);
+  const saved = typeof window !== "undefined" ? localStorage.getItem("mm-model") : null;
+  const modelId =
+    choice ??
+    (saved && models.some((m) => m.id === saved) ? saved : (models[0]?.id ?? ""));
 
   const send = async () => {
     const content = text.trim();
@@ -75,7 +73,7 @@ export default function Composer({
           <select
             value={modelId}
             onChange={(e) => {
-              setModelId(e.target.value);
+              setChoice(e.target.value);
               localStorage.setItem("mm-model", e.target.value);
             }}
             disabled={running}

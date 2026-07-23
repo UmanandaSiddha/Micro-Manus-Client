@@ -190,6 +190,8 @@ export function useThread(threadId: string, onCreditsChanged: () => void) {
   // Initial load + auto-attach to an in-flight run (page refresh mid-run).
   useEffect(() => {
     let cancelled = false;
+    // False positive: state is only set inside the resolved promise (async).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load().then((d) => {
       if (cancelled) return;
       const running = d.runs.find((r) => r.status === "running");
