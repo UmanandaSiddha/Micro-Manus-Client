@@ -10,7 +10,13 @@ import {
 import { api, ApiError } from "./api";
 
 export interface Me {
-  user: { id: string; email: string; name: string | null; image: string | null };
+  user: {
+    id: string;
+    email: string;
+    name: string | null;
+    image: string | null;
+    role: "user" | "admin";
+  };
   credits: number;
   hasEntitlement: boolean;
   hasKey: boolean;

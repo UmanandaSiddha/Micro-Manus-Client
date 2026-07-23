@@ -120,7 +120,10 @@ function AccountMenu() {
   const items = [
     { label: "Settings", hint: "keys", act: () => router.push("/settings") },
     { label: "Cost dashboard", hint: "usage", act: () => router.push("/dashboard") },
-  ] as const;
+    ...(me?.user.role === "admin"
+      ? [{ label: "Admin", hint: "platform", act: () => router.push("/admin") }]
+      : []),
+  ];
 
   return (
     <div className="relative" ref={ref}>

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Icon, { IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
+import { api } from "@/lib/api";
 import { useMe } from "@/lib/me";
 
 const NAV: { href: string; label: string; icon: IconName; color: string }[] = [
@@ -11,6 +12,12 @@ const NAV: { href: string; label: string; icon: IconName; color: string }[] = [
   { href: "/settings/billing", label: "Billing & credits", icon: "file-text", color: "#fbbf24" },
   { href: "/dashboard", label: "Usage & cost", icon: "table", color: "#22d3ee" },
 ];
+const ADMIN_NAV: (typeof NAV)[number] = {
+  href: "/admin",
+  label: "Admin",
+  icon: "globe",
+  color: "#f472b6",
+};
 
 /** Settings/dashboard chrome — the design's settings shell. */
 export default function SettingsShell({
@@ -21,7 +28,9 @@ export default function SettingsShell({
   title?: string;
 }) {
   const path = usePathname();
-  const { me } = useMe();
+  const router = useRouter();
+  const { me, refresh } = useMe();
+  const nav = me?.user.role === "admin" ? [...NAV, ADMIN_NAV] : NAV;
 
   return (
     <div className="flex flex-col h-screen">
@@ -53,8 +62,8 @@ export default function SettingsShell({
       </div>
 
       <div className="flex-1 flex min-h-0 max-w-[1080px] w-full mx-auto">
-        <div className="w-[218px] shrink-0 py-[26px] px-[14px]" style={{ borderRight: "1px solid rgba(255,255,255,.06)" }}>
-          {NAV.map((n) => {
+        <div className="w-[218px] shrink-0 py-[26px] px-[14px] flex flex-col" style={{ borderRight: "1px solid rgba(255,255,255,.06)" }}>
+          {nav.map((n) => {
             const active = path === n.href;
             return (
               <Link
@@ -71,6 +80,18 @@ export default function SettingsShell({
               </Link>
             );
           })}
+          <div className="flex-1" />
+          <button
+            onClick={() =>
+              void api("/api/auth/logout", { method: "POST" }).then(() =>
+                refresh().then(() => router.replace("/")),
+              )
+            }
+            className="w-full flex items-center gap-[11px] px-[11px] py-[9px] rounded-[9px] text-[13.5px] font-medium text-[#ff8a8a] cursor-pointer border-none bg-transparent hover:bg-[rgba(255,80,80,.08)]"
+          >
+            <Icon name="x" size={15} />
+            Sign out
+          </button>
         </div>
         <div className="flex-1 overflow-auto px-10 py-[34px]">{children}</div>
       </div>
