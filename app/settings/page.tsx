@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Guard from "@/components/Guard";
+import SettingsShell from "@/components/SettingsShell";
 import { api, ApiError } from "@/lib/api";
 import { useMe } from "@/lib/me";
 
@@ -10,7 +10,6 @@ interface KeyRow {
   id: string;
   provider: string;
   key_hint: string;
-  models: string[];
   created_at: string;
 }
 
@@ -21,6 +20,13 @@ const PROVIDERS = [
   ["anthropic", "Anthropic"],
   ["moonshot", "Moonshot (Kimi)"],
 ] as const;
+
+const PROVIDER_DOT: Record<string, string> = {
+  openrouter: "#818cf8",
+  openai: "#4ade80",
+  anthropic: "#a78bfa",
+  moonshot: "#60a5fa",
+};
 
 function KeysSection() {
   const { refresh } = useMe();
@@ -48,9 +54,7 @@ function KeysSection() {
         method: "POST",
         json: { apiKey: apiKey.trim(), ...(provider ? { provider } : {}) },
       });
-      setAdded(
-        `Detected ${res.provider} — ${res.models.length || "all registry"} models reachable.`,
-      );
+      setAdded(`Validated as ${res.provider} — models unlocked in the workspace picker.`);
       setApiKey("");
       await Promise.all([load(), refresh()]);
     } catch (e) {
@@ -65,19 +69,35 @@ function KeysSection() {
     await Promise.all([load(), refresh()]);
   };
 
+  const inputStyle = {
+    border: "1px solid rgba(255,255,255,.12)",
+    background: "rgba(0,0,0,.25)",
+  } as const;
+
   return (
-    <section className="rounded-xl border border-border-c bg-surface p-6">
-      <h2 className="font-medium">LLM API keys</h2>
-      <p className="text-sm text-muted mt-1">
-        Bring your own key — OpenRouter unlocks Claude, GPT and Kimi at once.
-        Keys are encrypted at rest; we only ever show a hint.
+    <div style={{ animation: "fadeUp .4s ease both" }}>
+      <h1 className="text-[23px] font-semibold tracking-[-.02em]">LLM keys</h1>
+      <p className="text-mut-2 mt-[6px] text-sm max-w-[60ch]">
+        Bring your own key — the agent runs on it and every token is itemized on
+        the cost dashboard. One OpenRouter key unlocks Claude, GPT and Kimi at once.
       </p>
 
-      <div className="mt-4 flex flex-col sm:flex-row gap-2">
+      <div
+        className="flex items-center gap-3 mt-5 px-4 py-[13px] rounded-xl"
+        style={{ border: "1px solid rgba(245,158,11,.2)", background: "rgba(245,158,11,.06)" }}
+      >
+        <span className="w-[7px] h-[7px] rounded-full bg-[#f59e0b] shrink-0" />
+        <span className="text-[12.8px]" style={{ color: "#d3b982" }}>
+          Keys are encrypted at rest (AES-256-GCM). Only a hint is ever shown again.
+        </span>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2 mt-[26px]">
         <select
           value={provider}
           onChange={(e) => setProvider(e.target.value)}
-          className="rounded-lg bg-surface-2 border border-border-c px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+          className="px-3 py-[10px] rounded-[10px] text-[13px]"
+          style={inputStyle}
         >
           {PROVIDERS.map(([v, label]) => (
             <option key={v} value={v}>
@@ -88,117 +108,81 @@ function KeysSection() {
         <input
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && apiKey.trim().length >= 8 && void add()}
           placeholder="sk-…"
-          className="flex-1 rounded-lg bg-surface-2 border border-border-c px-3 py-2.5 text-sm font-mono focus:outline-none focus:border-accent"
-          onKeyDown={(e) => e.key === "Enter" && apiKey.trim() && void add()}
+          className="mono flex-1 px-[14px] py-[10px] rounded-[10px] text-sm"
+          style={inputStyle}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "#818cf8")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,.12)")}
         />
         <button
           onClick={() => void add()}
           disabled={busy || apiKey.trim().length < 8}
-          className="rounded-lg bg-accent hover:bg-accent-hover transition-colors px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn-grad px-[15px] py-[10px] rounded-[10px] text-[13px] disabled:opacity-50"
         >
-          {busy ? "Validating…" : "Add key"}
+          {busy ? "Validating…" : "+ Add key"}
         </button>
       </div>
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-      {added && <p className="mt-3 text-sm text-emerald-400">{added}</p>}
+      {error && <p className="mt-3 text-[13px] text-[#ff8a8a]">{error}</p>}
+      {added && <p className="mt-3 text-[13px] text-[#4ade80]">{added}</p>}
 
-      <div className="mt-5 flex flex-col gap-2">
+      <div className="mt-6 rounded-[13px] overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.08)" }}>
+        <div
+          className="flex px-4 py-[11px] mono text-[10.5px] tracking-[.05em] uppercase text-mut-3"
+          style={{ background: "rgba(255,255,255,.03)", borderBottom: "1px solid rgba(255,255,255,.07)" }}
+        >
+          <span className="flex-[1.2]">Provider</span>
+          <span className="flex-[1.6]">Key</span>
+          <span className="flex-1">Added</span>
+          <span className="w-10" />
+        </div>
         {keys === null ? (
-          <p className="text-sm text-muted">Loading…</p>
+          <div className="px-4 py-5 text-sm text-mut">Loading…</div>
         ) : keys.length === 0 ? (
-          <p className="text-sm text-muted">No keys yet — add one to start chatting.</p>
+          <div className="px-4 py-5 text-sm text-mut">No keys yet — add one above to start researching.</div>
         ) : (
           keys.map((k) => (
             <div
               key={k.id}
-              className="flex items-center justify-between rounded-lg bg-surface-2 border border-border-c px-4 py-3"
+              className="flex items-center px-4 py-[14px] text-[13px]"
+              style={{ borderBottom: "1px solid rgba(255,255,255,.05)" }}
             >
-              <div>
-                <p className="text-sm font-medium capitalize">{k.provider}</p>
-                <p className="text-xs text-muted font-mono">{k.key_hint}</p>
-              </div>
+              <span className="flex-[1.2] font-medium capitalize flex items-center gap-2">
+                <span className="w-[6px] h-[6px] rounded-full" style={{ background: PROVIDER_DOT[k.provider] ?? "#818cf8" }} />
+                {k.provider}
+              </span>
+              <span className="flex-[1.6] mono text-xs text-mut">{k.key_hint}</span>
+              <span className="flex-1 text-mut-2">{new Date(k.created_at).toLocaleDateString()}</span>
               <button
                 onClick={() => void remove(k.id)}
-                className="text-xs text-red-400 hover:text-red-300"
+                className="w-7 h-7 rounded-lg cursor-pointer text-mut-2 bg-transparent"
+                style={{ border: "1px solid rgba(255,255,255,.09)" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,80,80,.12)";
+                  e.currentTarget.style.color = "#ff7a7a";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "";
+                }}
+                title="Remove key"
               >
-                Remove
+                ✕
               </button>
             </div>
           ))
         )}
       </div>
-    </section>
-  );
-}
-
-function CreditsSection() {
-  const { me } = useMe();
-  const [busy, setBusy] = useState(false);
-
-  const buy = async () => {
-    setBusy(true);
-    try {
-      const { url } = await api<{ url: string }>("/api/billing/checkout", {
-        method: "POST",
-      });
-      window.location.href = url;
-    } catch {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <section className="rounded-xl border border-border-c bg-surface p-6 flex items-center justify-between">
-      <div>
-        <h2 className="font-medium">Credits</h2>
-        <p className="text-sm text-muted mt-1">
-          <span className="text-foreground font-semibold">{me?.credits ?? 0}</span>{" "}
-          remaining — 1 credit per research run.
-        </p>
-      </div>
-      <button
-        onClick={() => void buy()}
-        disabled={busy}
-        className="rounded-lg border border-border-c bg-surface-2 hover:bg-border-c transition-colors px-4 py-2.5 text-sm font-medium"
-      >
-        {busy ? "Redirecting…" : "Buy 5 for $5"}
-      </button>
-    </section>
+    </div>
   );
 }
 
 export default function SettingsPage() {
-  const { refresh } = useMe();
-  const router = useRouter();
-
   return (
     <Guard>
-      <main className="flex-1 w-full max-w-2xl mx-auto px-6 py-10 flex flex-col gap-5">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Settings</h1>
-          <div className="flex gap-3">
-            <button
-              onClick={() => router.push("/chat")}
-              className="text-sm text-muted hover:text-foreground"
-            >
-              ← Back to chat
-            </button>
-            <button
-              onClick={() =>
-                void api("/api/auth/logout", { method: "POST" }).then(() =>
-                  refresh().then(() => router.replace("/")),
-                )
-              }
-              className="text-sm text-red-400 hover:text-red-300"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
+      <SettingsShell>
         <KeysSection />
-        <CreditsSection />
-      </main>
+      </SettingsShell>
     </Guard>
   );
 }

@@ -46,6 +46,11 @@ export function MeProvider({ children }: { children: React.ReactNode }) {
     // False positive: refresh() only sets state after an await (async fetch).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
+    // Credits change server-side (webhooks, refunds) — refetch when the tab
+    // regains focus so the nav pill stays honest.
+    const onFocus = () => void refresh();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
   }, [refresh]);
 
   return (

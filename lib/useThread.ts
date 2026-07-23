@@ -12,7 +12,14 @@ export interface StepView {
   args?: unknown;
   summary?: string;
   durationMs?: number;
+  sources?: Array<{ title: string; url: string; domain: string }>;
   running?: boolean;
+}
+
+export interface ArtifactRef {
+  id: string;
+  type: string;
+  title: string;
 }
 
 export interface RunView {
@@ -50,6 +57,7 @@ interface PersistedStep {
   args?: unknown;
   summary?: string;
   durationMs?: number;
+  sources?: StepView["sources"];
 }
 
 export function runFromPersisted(r: ThreadDetail["runs"][number]): RunView {
@@ -70,6 +78,7 @@ export function runFromPersisted(r: ThreadDetail["runs"][number]): RunView {
             args: s.args,
             summary: s.summary,
             durationMs: s.durationMs,
+            sources: s.sources,
           },
     ),
   };
@@ -114,6 +123,7 @@ export function applyEvent(run: RunView, event: string, data: Record<string, unk
       s.tool = data.tool as string;
       s.summary = data.summary as string;
       s.durationMs = data.durationMs as number;
+      s.sources = data.sources as StepView["sources"];
       s.running = false;
       break;
     }
@@ -145,11 +155,19 @@ const EVENTS = [
   "run_failed",
 ] as const;
 
-export function useThread(threadId: string, onCreditsChanged: () => void) {
+export function useThread(
+  threadId: string,
+  onCreditsChanged: () => void,
+  onArtifactCreated?: (a: ArtifactRef) => void,
+) {
   const [detail, setDetail] = useState<ThreadDetail | null>(null);
   const [liveRun, setLiveRun] = useState<RunView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const esRef = useRef<EventSource | null>(null);
+  const onArtifactRef = useRef(onArtifactCreated);
+  useEffect(() => {
+    onArtifactRef.current = onArtifactCreated;
+  }, [onArtifactCreated]);
 
   const load = useCallback(async () => {
     const d = await api<ThreadDetail>(`/api/chat/threads/${threadId}`);
@@ -170,6 +188,11 @@ export function useThread(threadId: string, onCreditsChanged: () => void) {
           const data = JSON.parse((e as MessageEvent).data as string) as Record<string, unknown>;
           if (ev === "artifact_created") {
             void load();
+            onArtifactRef.current?.({
+              id: data.artifactId as string,
+              type: data.type as string,
+              title: data.title as string,
+            });
             return;
           }
           setLiveRun((prev) => (prev && prev.id === runId ? applyEvent(prev, ev, data) : prev));

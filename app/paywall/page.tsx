@@ -3,8 +3,21 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Guard from "@/components/Guard";
+import Logo from "@/components/Logo";
 import { api, ApiError } from "@/lib/api";
 import { useMe } from "@/lib/me";
+
+const PACK_FEATURES = [
+  "5 full deep-research runs",
+  "Live agent timeline with sources",
+  "Typeset PDF report artifacts",
+  "Failed runs refund automatically",
+];
+const COUPON_FEATURES = [
+  "Same 5 research credits",
+  "No card required",
+  "Instant activation",
+];
 
 function PaywallInner() {
   const { me, refresh } = useMe();
@@ -18,14 +31,11 @@ function PaywallInner() {
   const [waitingLong, setWaitingLong] = useState(false);
   const polls = useRef(0);
 
-  // Entitled (webhook landed / coupon worked) → into the app.
   useEffect(() => {
     if (me && (me.hasEntitlement || me.credits > 0)) router.replace("/chat");
   }, [me, router]);
 
   // Back from Stripe: poll /me until the webhook grants credits.
-  // Fast for 15s, then keep polling slowly and tell the user what's up
-  // (locally this almost always means `stripe listen` isn't running).
   useEffect(() => {
     if (!paid) return;
     const t = setInterval(
@@ -43,9 +53,7 @@ function PaywallInner() {
     setBusy("pay");
     setError(null);
     try {
-      const { url } = await api<{ url: string }>("/api/billing/checkout", {
-        method: "POST",
-      });
+      const { url } = await api<{ url: string }>("/api/billing/checkout", { method: "POST" });
       window.location.href = url;
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Checkout failed");
@@ -58,7 +66,7 @@ function PaywallInner() {
     setError(null);
     try {
       await api("/api/billing/redeem", { method: "POST", json: { code } });
-      await refresh(); // effect above routes to /chat
+      await refresh();
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Redeem failed");
       setBusy(null);
@@ -68,19 +76,20 @@ function PaywallInner() {
   if (paid) {
     return (
       <main className="flex-1 grid place-items-center px-6">
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md" style={{ animation: "fadeUp .5s ease both" }}>
+          <div className="mx-auto mb-5 w-[15px] h-[15px] rounded-full border-2 border-[rgba(129,140,248,.3)] border-t-accent" style={{ animation: "spin .7s linear infinite" }} />
           <p className="text-lg font-medium">Payment received 🎉</p>
-          <p className="text-muted text-sm mt-2">Granting your credits…</p>
+          <p className="text-mut text-sm mt-2">Granting your credits…</p>
           {waitingLong && (
-            <div className="mt-6 rounded-lg border border-amber-900/60 bg-amber-950/30 px-4 py-3 text-xs text-amber-300 text-left">
-              Still waiting for Stripe&apos;s webhook confirmation. Your payment
-              went through — credits appear the moment the webhook lands (we
-              keep checking automatically).
-              <span className="block mt-2 text-amber-300/80">
-                Running locally? Make sure{" "}
-                <code className="font-mono">stripe listen</code> is forwarding
-                to the API and <code className="font-mono">STRIPE_WEBHOOK_SECRET</code>{" "}
-                is set.
+            <div
+              className="mt-6 rounded-xl px-4 py-3 text-xs text-left"
+              style={{ border: "1px solid rgba(245,158,11,.2)", background: "rgba(245,158,11,.06)", color: "#d3b982" }}
+            >
+              Still waiting for Stripe&apos;s webhook confirmation. Your payment went
+              through — credits appear the moment it lands (we keep checking).
+              <span className="block mt-2 opacity-80">
+                Running locally? Make sure <code className="mono">stripe listen</code> is
+                forwarding and <code className="mono">STRIPE_WEBHOOK_SECRET</code> is set.
               </span>
             </div>
           )}
@@ -89,63 +98,121 @@ function PaywallInner() {
     );
   }
 
+  const cardBase: React.CSSProperties = {
+    width: 320,
+    padding: "28px 26px",
+    borderRadius: 20,
+    backdropFilter: "blur(16px)",
+  };
+
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
-      <div className="text-center mb-10 max-w-md">
-        <h1 className="text-2xl font-semibold">Unlock MicroManus</h1>
-        <p className="text-muted mt-2 text-sm">
-          5 research credits — each credit is one full deep-research run. Your
-          LLM usage runs on your own API key.
+    <main className="flex-1 overflow-auto px-8 py-16 flex flex-col items-center">
+      <div className="mb-8" style={{ animation: "fadeUp .4s ease both" }}>
+        <Logo size={26} textSize={16} />
+      </div>
+      <div className="text-center" style={{ animation: "fadeUp .5s ease both" }}>
+        <h1 className="serif font-normal" style={{ fontSize: "clamp(34px, 4.6vw, 52px)", letterSpacing: "-.02em" }}>
+          Unlock your research agent
+        </h1>
+        <p className="text-mut mt-3 text-[15.5px]">
+          One flat pack of credits. Your LLM usage runs on your own key.
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4 w-full max-w-2xl">
-        <div className="rounded-xl border border-border-c bg-surface p-6 flex flex-col">
-          <p className="font-medium">Buy credits</p>
-          <p className="text-3xl font-semibold mt-3">
-            $5<span className="text-sm text-muted font-normal"> / 5 credits</span>
+      <div className="flex gap-[18px] mt-10 flex-wrap justify-center" style={{ animation: "fadeUp .6s .08s ease both" }}>
+        {/* Credit pack */}
+        <div
+          className="relative"
+          style={{
+            ...cardBase,
+            border: "1px solid rgba(129,140,248,.35)",
+            background: "linear-gradient(135deg, rgba(99,102,241,.12), rgba(34,211,238,.05))",
+            boxShadow: "0 24px 70px -18px rgba(99,102,241,.35)",
+          }}
+        >
+          <div
+            className="absolute left-1/2 -translate-x-1/2 grad px-3 py-1 rounded-full text-[11px] font-semibold text-[#0a0a12]"
+            style={{ top: -11 }}
+          >
+            TEST MODE
+          </div>
+          <div className="text-[15px] font-semibold">Starter pack</div>
+          <p className="text-mut-2 text-[13px] mt-[5px] min-h-[34px]">
+            Pay with any test card — this is a demo checkout.
           </p>
-          <div className="mt-3 rounded-md bg-surface-2 border border-border-c px-3 py-2 text-xs text-muted">
-            <span className="text-amber-400 font-medium">Test mode</span> — use
-            card <span className="font-mono text-foreground">4242 4242 4242 4242</span>,
-            any future expiry, any CVC.
+          <div className="flex items-baseline gap-[5px] mt-[14px]">
+            <span className="text-[38px] font-semibold tracking-[-.03em]">$5</span>
+            <span className="text-mut-3 text-[13px]">/ 5 credits</span>
           </div>
           <button
             onClick={() => void pay()}
             disabled={busy !== null}
-            className="mt-auto pt-5"
+            className="btn-grad w-full mt-[18px] py-[11px] rounded-[11px] text-[13.5px] disabled:opacity-50"
           >
-            <span className="block rounded-lg bg-accent hover:bg-accent-hover transition-colors px-4 py-2.5 text-sm font-medium text-white">
-              {busy === "pay" ? "Redirecting…" : "Pay with card"}
-            </span>
+            {busy === "pay" ? "Redirecting…" : "Pay with card"}
           </button>
+          <div className="mono text-[10.5px] text-mut-3 mt-3 text-center">
+            card 4242 4242 4242 4242 · any future date · any CVC
+          </div>
+          <div className="h-px my-5" style={{ background: "rgba(255,255,255,.08)" }} />
+          {PACK_FEATURES.map((f) => (
+            <div key={f} className="flex gap-[10px] items-start mb-[11px] text-[13px] text-ink-3">
+              <span className="text-accent shrink-0 mt-px">✓</span>
+              <span>{f}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="rounded-xl border border-border-c bg-surface p-6 flex flex-col">
-          <p className="font-medium">Have a coupon?</p>
-          <p className="text-muted text-sm mt-1">
-            Redeem it for 5 free credits.
+        {/* Coupon */}
+        <div
+          style={{
+            ...cardBase,
+            border: "1px solid rgba(255,255,255,.1)",
+            background: "rgba(255,255,255,.03)",
+          }}
+        >
+          <div className="text-[15px] font-semibold">Have a coupon?</div>
+          <p className="text-mut-2 text-[13px] mt-[5px] min-h-[34px]">
+            Redeem it and skip the card entirely.
           </p>
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && code.trim() && void redeem()}
             placeholder="COUPON CODE"
-            className="mt-4 rounded-lg bg-surface-2 border border-border-c px-3 py-2.5 text-sm font-mono uppercase placeholder:normal-case placeholder:font-sans focus:outline-none focus:border-accent"
-            onKeyDown={(e) => e.key === "Enter" && code && void redeem()}
+            className="mono w-full mt-[14px] px-[14px] py-3 rounded-[11px] text-sm uppercase placeholder:normal-case placeholder:font-sans"
+            style={{ border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.25)" }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#818cf8";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(129,140,248,.16)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,.12)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
           />
           <button
             onClick={() => void redeem()}
             disabled={busy !== null || !code.trim()}
-            className="mt-auto pt-5"
+            className="btn-ghost w-full mt-[14px] py-[11px] rounded-[11px] text-[13.5px] font-semibold disabled:opacity-50"
           >
-            <span className="block rounded-lg border border-border-c bg-surface-2 hover:bg-border-c transition-colors px-4 py-2.5 text-sm font-medium disabled:opacity-50">
-              {busy === "coupon" ? "Redeeming…" : "Redeem coupon"}
-            </span>
+            {busy === "coupon" ? "Redeeming…" : "Redeem coupon"}
           </button>
+          <div className="h-px my-5" style={{ background: "rgba(255,255,255,.08)" }} />
+          {COUPON_FEATURES.map((f) => (
+            <div key={f} className="flex gap-[10px] items-start mb-[11px] text-[13px] text-ink-3">
+              <span className="text-accent2 shrink-0 mt-px">✓</span>
+              <span>{f}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {error && <p className="mt-6 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-6 text-sm text-[#ff7a7a]">{error}</p>}
+      <p className="mt-8 text-mut-3 text-xs max-w-[46ch] text-center leading-relaxed">
+        Credits pay for agent runs on our side. Token spend happens on your own
+        LLM API key and is itemized on the cost dashboard.
+      </p>
     </main>
   );
 }

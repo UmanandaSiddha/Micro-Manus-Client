@@ -1,107 +1,86 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-
-export interface ModelOption {
-  id: string;
-  label: string;
-  vendor: string;
-  pricing: { in: number; out: number };
-}
-
-export function useModels() {
-  const [models, setModels] = useState<ModelOption[] | null>(null);
-  useEffect(() => {
-    void api<{ models: ModelOption[] }>("/api/models")
-      .then((r) => setModels(r.models))
-      .catch(() => setModels([]));
-  }, []);
-  return models;
-}
+import { useState } from "react";
 
 export default function Composer({
   disabled,
-  models,
+  running,
   onSend,
   onCancel,
-  running,
 }: {
   disabled: boolean;
-  models: ModelOption[];
-  onSend: (content: string, modelId: string) => Promise<void>;
-  onCancel?: () => void;
   running: boolean;
+  onSend: (content: string) => Promise<void>;
+  onCancel?: () => void;
 }) {
   const [text, setText] = useState("");
-  // Derived, no effect: explicit pick this session > saved choice > first model.
-  const [choice, setChoice] = useState<string | null>(null);
-  const saved = typeof window !== "undefined" ? localStorage.getItem("mm-model") : null;
-  const modelId =
-    choice ??
-    (saved && models.some((m) => m.id === saved) ? saved : (models[0]?.id ?? ""));
+  const [focused, setFocused] = useState(false);
 
   const send = async () => {
     const content = text.trim();
-    if (!content || !modelId) return;
+    if (!content || disabled || running) return;
     setText("");
     try {
-      await onSend(content, modelId);
+      await onSend(content);
     } catch {
       setText(content); // restore on failure
     }
   };
 
   return (
-    <div className="border-t border-border-c bg-surface p-3">
-      <div className="max-w-3xl mx-auto flex flex-col gap-2">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              void send();
-            }
+    <div className="shrink-0 px-7 pb-5 pt-[14px]">
+      <div className="max-w-[760px] mx-auto">
+        <div
+          className="flex items-end gap-[10px] rounded-2xl pl-4 pr-[6px] py-[6px]"
+          style={{
+            border: focused ? "1px solid rgba(129,140,248,.45)" : "1px solid rgba(255,255,255,.11)",
+            background: "rgba(20,20,26,.7)",
+            backdropFilter: "blur(16px)",
+            boxShadow: focused
+              ? "0 0 0 3px rgba(129,140,248,.12), 0 8px 30px -8px rgba(0,0,0,.5)"
+              : "0 8px 30px -8px rgba(0,0,0,.5)",
+            transition: "border-color .15s, box-shadow .15s",
           }}
-          placeholder={running ? "Research in progress…" : "Ask a research question…"}
-          disabled={disabled || running}
-          rows={2}
-          className="w-full resize-none rounded-xl bg-surface-2 border border-border-c px-4 py-3 text-sm focus:outline-none focus:border-accent disabled:opacity-60"
-        />
-        <div className="flex items-center gap-2">
-          <select
-            value={modelId}
-            onChange={(e) => {
-              setChoice(e.target.value);
-              localStorage.setItem("mm-model", e.target.value);
+        >
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void send();
+              }
             }}
-            disabled={running}
-            className="rounded-lg bg-surface-2 border border-border-c px-2 py-1.5 text-xs focus:outline-none"
-          >
-            {models.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label} (${m.pricing.in}/{m.pricing.out} per 1M)
-              </option>
-            ))}
-          </select>
-          <span className="text-xs text-muted">1 credit per run</span>
-          {running && onCancel ? (
-            <button
-              onClick={onCancel}
-              className="ml-auto rounded-lg border border-border-c px-4 py-1.5 text-sm text-red-400 hover:bg-surface-2"
-            >
-              Stop
-            </button>
-          ) : (
-            <button
-              onClick={() => void send()}
-              disabled={disabled || running || !text.trim()}
-              className="ml-auto rounded-lg bg-accent hover:bg-accent-hover transition-colors px-5 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-            >
-              Send
-            </button>
-          )}
+            placeholder={running ? "Research in progress…" : "Ask MicroManus to research anything…"}
+            disabled={disabled || running}
+            rows={2}
+            className="flex-1 bg-transparent border-none resize-none text-[14.5px] leading-[1.5] py-[10px] max-h-[120px] disabled:opacity-60"
+          />
+          <div className="flex items-center gap-[6px] pb-1">
+            {running && onCancel ? (
+              <button
+                onClick={onCancel}
+                className="h-[34px] px-[14px] rounded-[10px] cursor-pointer text-[12.5px] font-semibold text-[#ff8a8a]"
+                style={{ border: "1px solid rgba(255,90,90,.3)", background: "rgba(120,30,30,.15)" }}
+              >
+                Stop
+              </button>
+            ) : (
+              <button
+                onClick={() => void send()}
+                disabled={disabled || running || !text.trim()}
+                className="w-[34px] h-[34px] rounded-[10px] border-none cursor-pointer grad text-[#0a0a12] text-[15px] font-bold flex items-center justify-center disabled:opacity-40"
+                style={{ boxShadow: "0 4px 14px rgba(99,102,241,.4)" }}
+              >
+                ↑
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="text-center mt-[9px] text-[11px] text-mut-4">
+          1 credit per research run · failed runs refund automatically · verify important results
         </div>
       </div>
     </div>
