@@ -30,8 +30,15 @@ export const firebaseAuth = getAuth(app);
 export async function signInAndGetIdToken(
   provider: "google" | "github",
 ): Promise<string> {
-  const p =
-    provider === "google" ? new GoogleAuthProvider() : new GithubAuthProvider();
+  let p;
+  if (provider === "google") {
+    p = new GoogleAuthProvider();
+  } else {
+    p = new GithubAuthProvider();
+    // Ask GitHub for the user's email — without this scope, accounts with a
+    // private email sign in with no email and land as an unlinked user.
+    p.addScope("user:email");
+  }
   const cred = await signInWithPopup(firebaseAuth, p);
   return cred.user.getIdToken();
 }
